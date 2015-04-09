@@ -1,83 +1,51 @@
-import java.util.*;
-
 public class SCAN implements Scheduler {
-    TreeMap<Integer, Integer> refStr;
-    int start;
-    int max;
 
-    /* Constructor
-     *
-     * @param refStr Integer array of cylinder service requests
-     * @param start  Cylinder to begin the algorithm at
-     * @param max    Index of the last cylinder on disk
-     */
-    public SCAN(int[] refStr, int start, int max) {
-        this.refStr = new TreeMap<Integer, Integer>();
-        for (int i = 0; i < refStr.length; i++) {
-            this.refStr.put(refStr[i], refStr[i]);
-        }
-        this.refStr.put(start, start);
-        this.start = start;
-        this.max = max;
+        int[] queue;
+        int initialCylinder;
+        boolean init = false;
+
+        public SCAN(int[] queue, int initialCylinder){
+        this.queue = queue;
+        this.initialCylinder = initialCylinder;
     }
 
-    /* Services the requests using Scan, starting in the direction with fewer requests
-     *
-     * @return The amount of head movement for this algorithm
-     */
-    @Override
-    public int serviceRequests() {
-        int head = start;
-        int total = 0;
+        public int serviceRequest(){
+        int headMovement = 0;
+        int prev = initialCylinder;
 
-        // Split reference string into those less than the starting location and those greater
-        SortedMap<Integer, Integer> lesser = refStr.headMap(start, false);
-        SortedMap<Integer, Integer> greater = refStr.tailMap(start, false);
+        for(int i = 1; i<queue.length; i++){
+            if(init)
+        }
 
-        int next;
-        // Start going in the direction that has fewer references
-        if (lesser.size() < greater.size()) {
-            // Start with those less than the starting location...
-            while (!lesser.isEmpty()) {
-                // Get the next location, add the distance to the total, and remove that location
-                next = lesser.lastKey();
-                total += Math.abs(head - next);
-                head = next;
-                lesser.remove(new Integer(next));
-            }
-            // Go down to zero
-            total += Math.abs(head - 0);
-            head = 0;
-            // ...then do those greater than the starting location
-            while (!greater.isEmpty()) {
-                // Get the next location, add the distance to the total, and remove that location
-                next = greater.firstKey();
-                total += Math.abs(head - next);
-                head = next;
-                greater.remove(new Integer(next));
+        return headMovement;
+
+    }
+
+       /* int head_movement = 0, flag = 0;
+
+        for (int i = 1; i <= number_of_request; i++)
+            if (sorted_request[i] > sorted_request[0] && flag == 0)
+                flag = i;
+
+        if (direction == 1) {
+            if (flag == 1)
+                head_movement += sorted_request[number_of_request] - sorted_request[0];
+
+            else {
+                head_movement += max - sorted_request[0];
+                head_movement += max - sorted_request[1];
             }
         } else {
-            // Start with those greater than the starting location...
-            while (!greater.isEmpty()) {
-                // Get the next location, add the distance to the total, and remove that location
-                next = greater.firstKey();
-                total += Math.abs(head - next);
-                head = next;
-                greater.remove(new Integer(next));
-            }
-            // Go to the last cylinder
-            total += Math.abs(head - max);
-            head = max;
-            // ...then do those less than the starting location
-            while (!lesser.isEmpty()) {
-                // Get the next location, add the distance to the total, and remove that location
-                next = lesser.lastKey();
-                total += Math.abs(head - next);
-                head = next;
-                lesser.remove(new Integer(next));
+            if (flag == 0)
+                head_movement += abs(sorted_request[number_of_request] - sorted_request[0]);
+
+            else {
+                head_movement += sorted_request[0];
+                head_movement += sorted_request[number_of_request];
             }
         }
+        return head_movement;
+    }*/
 
-        return total;
-    }
+    public int[] returnPath() { return queue;}
 }

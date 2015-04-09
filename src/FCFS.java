@@ -1,36 +1,31 @@
-public class FCFS implements Scheduler {
-    int[] refStr;
-    int start;
 
-    /* Constructor
-     *
-     * @param refStr Integer array of cylinder service requests
-     * @param start  Cylinder to begin the algorithm at
-     */
-    public FCFS(int[] refStr, int start) {
-        this.refStr = refStr;
-        this.start = start;
+public class FCFS implements Scheduler {
+
+    int[] queue;
+    int initialCylinder;
+    boolean init = false;
+
+    public FCFS(int[] queue, int initialCylinder) {
+        this.queue = queue;
+        this.initialCylinder = initialCylinder;
     }
 
-    /* Services the requests using First-Come-First-Serve
-     *
-     * @return The amount of head movement for this algorithm
-     */
-    @Override
     public int serviceRequests() {
-        int head = start;
-        int total = 0;
-
-        // For each request...
-        for (int i = 0; i < refStr.length; i++) {
-
-            // Add to the total head movement
-            total += Math.abs(head - refStr[i]);
-
-            // Move the head
-            head = refStr[i];
+        int headMovement = 0;
+        int prev = initialCylinder;
+        for (int i = 0; i < queue.length; i++) {
+            if (init) {
+                headMovement += Math.abs(queue[i - 1] - queue[i]);
+            }
+            if (!init) {
+                headMovement += Math.abs(queue[i] - prev);
+                init = true;
+            }
         }
+        return headMovement;
+    }
 
-        return total;
+    public int[] returnPath(){
+        return queue;
     }
 }

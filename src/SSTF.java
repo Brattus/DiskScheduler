@@ -1,62 +1,65 @@
-import java.util.*;
+class SSTF implements Scheduler{
+    int[] queue;
+    int initialCylinder;
 
-public class SSTF implements Scheduler {
-    ArrayList<Integer> refStr;
-    int start;
-
-    /* Constructor
-     *
-     * @param refStr Integer array of cylinder service requests
-     * @param start  Cylinder to begin the algorithm at
-     */
-    public SSTF(int[] refStr, int start) {
-        this.refStr = new ArrayList<Integer>(refStr.length);
-        for (int i = 0; i < refStr.length; i++) {
-            this.refStr.add(refStr[i]);
-        }
-        this.start = start;
+    public SSTF(int[] queue, int initialCylinder){
+        this.queue = queue;
+        this.initialCylinder = initialCylinder;
     }
 
-    /* Services the requests using Shortest-Seek-Time-First
-     *
-     * @return The amount of head movement for this algorithm
-     */
-    @Override
-    public int serviceRequests() {
-        int head = start;
-        int total = 0;
-
-        while (!refStr.isEmpty()) {
-            // Find the location with the shortest seek time from current location
-            int nearest = calcNext(head);
-
-            // Add to the total head movement
-            total += Math.abs(head - nearest);
-            System.out.print("SSTF movement = " + (nearest - head) + " \n");
-
-            // Move the head
-            head = nearest;
-            refStr.remove(new Integer(nearest));
+    public int serviceRequests(){
+        int headMovement = 0;
+        int prev = initialCylinder;
+        int [] rpath = path();
+        for (int i=0; i < rpath.length; i++) {
+            headMovement += Math.abs(rpath[i]-prev);
+            prev = rpath[i];
         }
-
-
-        return total;
+        return headMovement;
     }
 
-    /* Caclulates which request in the reference string is the closest to a given location
-     *
-     * @param loc The current head location
-     * @ return The next closest location
-     */
-    public int calcNext(int loc) {
-        Iterator<Integer> itr = refStr.iterator();
-        int closest = refStr.get(0);
-        while (itr.hasNext()) {
-            int cur = itr.next();
-            if (Math.abs(loc - cur) < Math.abs(loc - closest)) {
-                closest = cur;
+    public int[] path(){
+        int [] resultPath = new int[queue.length];
+        int now = initialCylinder;
+        int [] requests = new int[queue.length];
+        for (int i = 0; i < queue.length; i++){
+            requests[i] = queue[i];
+        }
+        for (int i = 0; i < resultPath.length; i++){
+            int closest = closest(now, requests);
+            resultPath[i] = closest;
+            now = closest;
+        }
+        return resultPath;
+    }
+
+    int closest(int k, int[] requests){
+        int min = 5000000;
+        int minPos = -1;
+        for (int i = 0; i < requests.length; i++){
+            if (requests[i] == -1) continue;
+            else if  (Math.abs(k-queue[i]) < min) {
+                minPos = i;
+                min = Math.abs(k-queue[i++]);
             }
         }
-        return closest;
+        int nearestCylinder = requests[minPos];
+        requests[minPos] = -1;
+        return nearestCylinder;
+    }
+
+    public void println(){
+        System.out.println("SSTF head movement = " + serviceRequests());
+
+        System.out.print("SSTF Path = ");
+        for(int i: path()){
+            System.out.print(i + " ");
+        }
+        System.out.println("");
+    }
+
+    public int[] returnPath(){
+        int[] path = path();
+        return path;
     }
 }
